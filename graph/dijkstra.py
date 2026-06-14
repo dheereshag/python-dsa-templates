@@ -3,11 +3,13 @@ from heapq import heappush, heappop
 class Graph:
     def __init__(self, vertices):
         self.V = vertices
+        # self.graph[s] acts as a "bucket" for all edges starting at s
         self.graph = [[] for _ in range(vertices)]
 
     def add_edge(self, s, d, w):
-        self.graph[s].append((d, w))
-        self.graph[d].append((s, w))
+        # Storing (source, destination, weight) for structural consistency
+        self.graph[s].append((s, d, w))
+        self.graph[d].append((d, s, w))
 
     def dijkstra(self, src, dest):
         # Initialize distances with infinity
@@ -29,7 +31,8 @@ class Graph:
                 break
 
             # Check all neighboring nodes of s
-            for d, w in self.graph[s]:
+            # We unpack the tuple completely, using '_' to ignore the redundant source
+            for _, d, w in self.graph[s]:
                 # If the distance to d through s is smaller than the current distance to d
                 if dist[s] + w < dist[d]:
                     # Update the distance to d
@@ -56,7 +59,7 @@ class Graph:
         # Reverse the path to print it in the correct order
         path.reverse()
 
-        #print the path
+        # Print the path
         print("The path is:", " -> ".join(map(str, path)))
 
 # Example usage
