@@ -3,13 +3,14 @@ from heapq import heappush, heappop
 class PrimGraph:
     def __init__(self, vertices):
         self.V = vertices
-        # self.graph[s] acts as a "bucket" for all edges starting at s
+        # self.graph[u] acts as a "bucket" for all edges starting at u
         self.graph = [[] for _ in range(vertices)]
 
-    def add_edge(self, s, d, w):
-        # Storing (source, destination, weight) for structural consistency
-        self.graph[s].append((s, d, w))
-        self.graph[d].append((d, s, w))
+    def add_edge(self, u, v, w):
+        # Storing (u, v, w) for structural consistency
+        # MSTs are built on undirected graphs, so we add both directions
+        self.graph[u].append((u, v, w))
+        self.graph[v].append((v, u, w))
 
     def prim_mst(self, src):
         # Track if a vertex is already included in the MST
@@ -30,37 +31,38 @@ class PrimGraph:
 
         while pq:
             # Get node with minimum key value from the priority queue
-            weight, s = heappop(pq)
+            weight, u = heappop(pq)
 
             # If the vertex is already in MST, skip it to avoid cycles
-            if in_mst[s]:
+            if in_mst[u]:
                 continue
 
             # Add vertex to MST
-            in_mst[s] = True
+            in_mst[u] = True
             total_cost += weight
             
             # Record the edge (except for the initial source node)
-            if parent[s] != -1:
-                mst_edges.append((parent[s], s, weight))
+            if parent[u] != -1:
+                mst_edges.append((parent[u], u, weight))
 
-            # Check all neighboring nodes of s
-            for _, d, w in self.graph[s]:
-                # If d is not yet in MST and edge weight is smaller than current key of d
-                if not in_mst[d] and w < key[d]:
+            # Check all neighboring nodes of u
+            # We unpack the tuple completely, using '_' to ignore the redundant entry
+            for _, v, w in self.graph[u]:
+                # If v is not yet in MST and edge weight is smaller than current key of v
+                if not in_mst[v] and w < key[v]:
                     # Update key and parent
-                    key[d] = w
-                    parent[d] = s
-                    heappush(pq, (key[d], d))
+                    key[v] = w
+                    parent[v] = u
+                    heappush(pq, (key[v], v))
 
         # Print the resulting MST
         print("Prim's MST Edges:")
-        for s, d, w in mst_edges:
-            print(f"{s} -- {d} == Weight: {w}")
+        for u, v, w in mst_edges:
+            print(f"{u} -- {v} == Weight: {w}")
         print(f"Total Minimum Cost: {total_cost}\n")
 
 
-# Example Usage (matching your exact inputs)
+# Example Usage
 pg = PrimGraph(5)
 pg.add_edge(0, 1, 10)
 pg.add_edge(0, 4, 5)
