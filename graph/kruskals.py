@@ -4,9 +4,9 @@ class KruskalGraph:
         # Flat edge list to align with how Kruskal's evaluates globally
         self.graph = []  
 
-    def add_edge(self, s, d, w):
-        # Consistent with your pattern of tracking complete (s, d, w) tuples
-        self.graph.append([s, d, w])
+    def add_edge(self, u, v, w):
+        # Consistent with your pattern of tracking complete (u, v, w) tuples
+        self.graph.append([u, v, w])
 
     # Helper functions for Union-Find (Disjoint Set)
     def find(self, parent, i):
@@ -41,29 +41,29 @@ class KruskalGraph:
 
         # An MST always has exactly V - 1 edges
         while edge_count < self.V - 1 and index < len(self.graph):
-            # Consistently unpacking using s, d, w
-            s, d, w = self.graph[index]
+            # Consistently unpacking using u, v, w
+            u, v, w = self.graph[index]
             index += 1
             
-            root_s = self.find(parent, s)
-            root_d = self.find(parent, d)
+            root_u = self.find(parent, u)
+            root_v = self.find(parent, v)
 
             # If adding this edge doesn't form a cycle
-            if root_s != root_d:
+            if root_u != root_v:
                 edge_count += 1
-                mst_edges.append([s, d, w])
-                self.union(parent, rank, root_s, root_d)
+                mst_edges.append([u, v, w])
+                self.union(parent, rank, root_u, root_v)
 
         # Print the resulting MST
         print("Kruskal's MST Edges:")
         total_cost = 0
-        for s, d, w in mst_edges:
-            print(f"{s} -- {d} == Weight: {w}")
+        for u, v, w in mst_edges:
+            print(f"{u} -- {v} == Weight: {w}")
             total_cost += w
         print(f"Total Minimum Cost: {total_cost}\n")
 
 
-# Example Usage (matching your exact inputs)
+# Example Usage
 kg = KruskalGraph(5)
 kg.add_edge(0, 1, 10)
 kg.add_edge(0, 4, 5)
