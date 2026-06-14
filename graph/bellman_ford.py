@@ -9,13 +9,13 @@ class Graph:
     def bellman_ford(self, source, dest):
         dist = [float("Inf")] * self.V
         dist[source] = 0
-        pred = [-1] * self.V
+        parent = [-1] * self.V
 
         for i in range(self.V - 1):
             for s, d, w in self.graph:
                 if dist[s] != float("Inf") and dist[s] + w < dist[d]:
                     dist[d] = dist[s] + w
-                    pred[d] = s
+                    parent[d] = s
 
         for s, d, w in self.graph:
             if dist[s] != float("Inf") and dist[s] + w < dist[d]:
@@ -26,7 +26,7 @@ class Graph:
         d = dest
         while d != -1:
             path.append(d)
-            d = pred[d]
+            d = parent[d]
         path.reverse()
 
         print(
