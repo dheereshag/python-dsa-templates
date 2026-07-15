@@ -4,16 +4,20 @@ def count_sort(arr):
     output = [0] * n
     count = [0] * (mx + 1)
 
-    for i in range(n):
-        count[arr[i]] += 1
+    # Count frequencies
+    for num in arr:
+        count[num] += 1
 
+    # Convert to cumulative count
     for i in range(1, mx + 1):
         count[i] += count[i - 1]
 
-    for i in range(n - 1, -1, -1):
-        count[arr[i]] -= 1
-        output[count[arr[i]]] = arr[i]
+    # Build output array (iterate from right to left)
+    for num in reversed(arr):
+        count[num] -= 1
+        output[count[num]] = num
 
+    # Copy back to original array
     for i in range(n):
         arr[i] = output[i]
 
