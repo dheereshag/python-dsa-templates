@@ -1,21 +1,24 @@
+from collections import deque
+
+
 class Graph:
     def __init__(self, vertices):
         self.V = vertices
         # self.graph[u] acts as a "bucket" for all edges starting at u
         self.graph = [[] for _ in range(vertices)]
 
-    def add_edge(self, u, v, w=1):
-        # Storing (source, destination, weight) using u, v, w
-        self.graph[u].append((u, v, w))
-        self.graph[v].append((v, u, w))
+    def add_edge(self, u, v):
+        # Add undirected edge between u and v
+        self.graph[u].append(v)
+        self.graph[v].append(u)
 
+    # --- Method 1: DFS with Parent Tracking ---
     def _has_cycle_dfs(self, u, visited, parent):
         # Mark the current node u as visited
         visited[u] = True
 
         # Check all neighboring nodes of u
-        # We unpack using u, v, w (ignoring the redundant source u)
-        for _, v, w in self.graph[u]:
+        for v in self.graph[u]:
             # If the neighbor v is not visited, recurse on it
             if not visited[v]:
                 if self._has_cycle_dfs(v, visited, u):
@@ -28,6 +31,11 @@ class Graph:
         return False
 
     def has_cycle(self):
+        """
+        Detects cycles using DFS with parent tracking.
+        Time Complexity: O(V + E)
+        Space Complexity: O(V)
+        """
         # Track visited vertices across potential disconnected components
         visited = [False] * self.V
 
@@ -40,16 +48,50 @@ class Graph:
                     
         return False
 
+    # --- Method 2: BFS with Parent Tracking ---
+    def _has_cycle_bfs(self, start, visited):
+        # Queue stores pairs of (current_node, parent)
+        queue = deque([(start, -1)])
+        visited[start] = True
+
+        while queue:
+            u, parent = queue.popleft()
+
+            for v in self.graph[u]:
+                if not visited[v]:
+                    visited[v] = True
+                    queue.append((v, u))
+                elif v != parent:
+                    # Adjacent node is visited and is NOT the parent
+                    return True
+
+        return False
+
+    def has_cycle_bfs(self):
+        """
+        Detects cycles using BFS with parent tracking.
+        Time Complexity: O(V + E)
+        Space Complexity: O(V)
+        """
+        visited = [False] * self.V
+
+        # Loop through all vertices to handle disconnected graphs
+        for i in range(self.V):
+            if not visited[i]:
+                if self._has_cycle_bfs(i, visited):
+                    return True
+
+        return False
+
 # --- Example Usage ---
 
-print("Graph with a cycle:")
-g = Graph(4)
-g.add_edge(0, 1)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-g.add_edge(3, 0)  # Completes the cycle 0-1-2-3-0
+if __name__ == "__main__":
+    print("Graph with a cycle:")
+    g = Graph(4)
+    g.add_edge(0, 1)
+    g.add_edge(1, 2)
+    g.add_edge(2, 3)
+    g.add_edge(3, 0)  # Completes the cycle 0-1-2-3-0
 
-if g.has_cycle():
-    print("Graph contains a cycle!")
-else:
-    print("Graph does not contain a cycle.")
+    print("DFS has_cycle:", g.has_cycle())         # True
+    print("BFS has_cycle:", g.has_cycle_bfs())     # True
