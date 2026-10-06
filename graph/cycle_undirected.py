@@ -13,7 +13,7 @@ class Graph:
         self.graph[v].append(u)
 
     # --- Method 1: DFS with Parent Tracking ---
-    def _has_cycle_dfs(self, u, visited, parent):
+    def _dfs_undirected_cycle(self, u, visited, parent):
         # Mark the current node u as visited
         visited[u] = True
 
@@ -21,7 +21,7 @@ class Graph:
         for v in self.graph[u]:
             # If the neighbor v is not visited, recurse on it
             if not visited[v]:
-                if self._has_cycle_dfs(v, visited, u):
+                if self._dfs_undirected_cycle(v, visited, u):
                     return True
             # If an adjacent vertex v is visited and is NOT the parent of u,
             # then there is a cycle in the graph.
@@ -43,13 +43,13 @@ class Graph:
         for i in range(self.V):
             if not visited[i]:
                 # Start DFS with parent initialized as -1
-                if self._has_cycle_dfs(i, visited, -1):
+                if self._dfs_undirected_cycle(i, visited, -1):
                     return True
                     
         return False
 
     # --- Method 2: BFS with Parent Tracking ---
-    def _has_cycle_bfs(self, start, visited):
+    def _bfs_undirected_cycle(self, start, visited):
         # Queue stores pairs of (current_node, parent)
         queue = deque([(start, -1)])
         visited[start] = True
@@ -78,7 +78,7 @@ class Graph:
         # Loop through all vertices to handle disconnected graphs
         for i in range(self.V):
             if not visited[i]:
-                if self._has_cycle_bfs(i, visited):
+                if self._bfs_undirected_cycle(i, visited):
                     return True
 
         return False

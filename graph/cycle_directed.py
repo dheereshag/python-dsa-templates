@@ -12,7 +12,7 @@ class Graph:
         self.graph[u].append(v)
 
     # --- Method 1: DFS with Path Tracking (Back-edge detection) ---
-    def _has_cycle_dfs(self, u, visited, path):
+    def _dfs_directed_path_cycle(self, u, visited, path):
         # Mark current node as visited and append it to the active path
         visited[u] = True
         path.add(u)
@@ -25,7 +25,7 @@ class Graph:
                 return True
             # If neighbor v is not visited, recurse on it
             if not visited[v]:
-                if self._has_cycle_dfs(v, visited, path):
+                if self._dfs_directed_path_cycle(v, visited, path):
                     return True
 
         # Backtrack: remove current node from the active path
@@ -44,7 +44,7 @@ class Graph:
         # Loop through all vertices to handle disconnected components
         for i in range(self.V):
             if not visited[i]:
-                if self._has_cycle_dfs(i, visited, path):
+                if self._dfs_directed_path_cycle(i, visited, path):
                     return True
 
         return False
@@ -82,7 +82,7 @@ class Graph:
         return visited_count != self.V
 
     # --- Method 3: DFS using 3-Coloring Algorithm ---
-    def _has_cycle_colors_dfs(self, u, color):
+    def _dfs_directed_color_cycle(self, u, color):
         # Constants for clarity:
         # WHITE = 0 (unvisited)
         # GRAY  = 1 (currently visiting / in active DFS recursion path)
@@ -97,7 +97,7 @@ class Graph:
                 return True
             # If neighbor is WHITE, recurse on it
             if color[v] == 0:
-                if self._has_cycle_colors_dfs(v, color):
+                if self._dfs_directed_color_cycle(v, color):
                     return True
 
         # Mark current node as BLACK (completely processed)
@@ -119,7 +119,7 @@ class Graph:
         # Loop through all vertices to handle disconnected components
         for i in range(self.V):
             if color[i] == 0:
-                if self._has_cycle_colors_dfs(i, color):
+                if self._dfs_directed_color_cycle(i, color):
                     return True
 
         return False
